@@ -37,7 +37,7 @@ Shader "Custom/DeformerSurfaceShader"
         
         void vert(inout appdata_full data)
         {
-            float4 position = (data.vertex);
+            float4 position = data.vertex;
             const float distance = 6.0 - length(data.vertex - float4(0, 0, 0, 0));
             position.y += sin(_Time * _Speed + distance) * _Amplitude;
 
