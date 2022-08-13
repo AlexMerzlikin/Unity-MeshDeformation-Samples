@@ -53,14 +53,18 @@ namespace MeshDeformation.MeshDataDeformer
 
         private void CreateVertexDataArray()
         {
-            _vertexData = new NativeArray<VertexData>(Mesh.vertexCount, Allocator.Persistent);
-            for (var i = 0; i < Mesh.vertexCount; ++i)
+            var meshVertexCount = Mesh.vertexCount;
+            _vertexData = new NativeArray<VertexData>(meshVertexCount, Allocator.Persistent);
+            var meshVertices = Mesh.vertices;
+            var meshNormals = Mesh.normals;
+            var meshUV = Mesh.uv;
+            for (var i = 0; i < meshVertexCount; ++i)
             {
                 var v = new VertexData
                 {
-                    Position = Mesh.vertices[i],
-                    Normal = Mesh.normals[i],
-                    Uv = Mesh.uv[i]
+                    Position = meshVertices[i],
+                    Normal = meshNormals[i],
+                    Uv = meshUV[i]
                 };
                 _vertexData[i] = v;
             }
