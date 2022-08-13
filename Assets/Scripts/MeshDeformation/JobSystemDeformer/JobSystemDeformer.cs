@@ -11,9 +11,9 @@ namespace MeshDeformation.JobSystemDeformer
         private DeformerJob _job;
         private JobHandle _handle;
 
-        private void Awake()
+        protected override void Awake()
         {
-            Mesh = GetComponent<MeshFilter>().mesh;
+            base.Awake();
             _vertices = new NativeArray<Vector3>(Mesh.vertices, Allocator.Persistent);
         }
 

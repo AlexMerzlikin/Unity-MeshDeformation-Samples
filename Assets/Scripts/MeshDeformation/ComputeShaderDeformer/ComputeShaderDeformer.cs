@@ -10,22 +10,20 @@ namespace MeshDeformation.ComputeShaderDeformer
         private int _kernel;
         private int _dispatchCount;
         private bool _isDispatched;
-        private Mesh _mesh;
         private ComputeBuffer _computeBuffer;
         private AsyncGPUReadbackRequest _request;
         private NativeArray<VertexData> _vertexData;
         private readonly int _timePropertyId = Shader.PropertyToID("_Time");
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (!SystemInfo.supportsAsyncGPUReadback)
             {
                 gameObject.SetActive(false);
                 return;
             }
 
-            var meshFilter = GetComponent<MeshFilter>();
-            _mesh = meshFilter.mesh;
             CreateVertexData();
             SetMeshVertexBufferParams();
             _computeBuffer = CreateComputeBuffer();
@@ -44,11 +42,11 @@ namespace MeshDeformation.ComputeShaderDeformer
 
         private void CreateVertexData()
         {
-            var meshVertexCount = _mesh.vertexCount;
+            var meshVertexCount = Mesh.vertexCount;
             _vertexData = new NativeArray<VertexData>(meshVertexCount, Allocator.Temp);
-            var meshVertices = _mesh.vertices;
-            var meshNormals = _mesh.normals;
-            var meshUV = _mesh.uv;
+            var meshVertices = Mesh.vertices;
+            var meshNormals = Mesh.normals;
+            var meshUV = Mesh.uv;
             for (var i = 0; i < meshVertexCount; ++i)
             {
                 var v = new VertexData
@@ -66,20 +64,20 @@ namespace MeshDeformation.ComputeShaderDeformer
             var layout = new[]
             {
                 new VertexAttributeDescriptor(VertexAttribute.Position,
-                    _mesh.GetVertexAttributeFormat(VertexAttribute.Position), 3),
+                    Mesh.GetVertexAttributeFormat(VertexAttribute.Position), 3),
                 new VertexAttributeDescriptor(VertexAttribute.Normal,
-                    _mesh.GetVertexAttributeFormat(VertexAttribute.Normal), 3),
+                    Mesh.GetVertexAttributeFormat(VertexAttribute.Normal), 3),
                 new VertexAttributeDescriptor(VertexAttribute.TexCoord0,
-                    _mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord0), 2),
+                    Mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord0), 2),
             };
-            _mesh.SetVertexBufferParams(_mesh.vertexCount, layout);
+            Mesh.SetVertexBufferParams(Mesh.vertexCount, layout);
         }
 
         private void SetComputeShaderValues()
         {
             _kernel = _computeShader.FindKernel("CSMain");
             _computeShader.GetKernelThreadGroupSizes(_kernel, out var threadX, out _, out _);
-            _dispatchCount = Mathf.CeilToInt(_mesh.vertexCount / threadX + 1);
+            _dispatchCount = Mathf.CeilToInt(Mesh.vertexCount / threadX + 1);
             _computeShader.SetBuffer(_kernel, "_VertexBuffer", _computeBuffer);
             _computeShader.SetFloat("_Speed", _speed);
             _computeShader.SetFloat("_Amplitude", _amplitude);
@@ -87,7 +85,7 @@ namespace MeshDeformation.ComputeShaderDeformer
 
         private ComputeBuffer CreateComputeBuffer()
         {
-            var computeBuffer = new ComputeBuffer(_mesh.vertexCount, 32);
+            var computeBuffer = new ComputeBuffer(Mesh.vertexCount, 32);
             if (_vertexData.IsCreated)
             {
                 computeBuffer.SetData(_vertexData);
@@ -123,9 +121,9 @@ namespace MeshDeformation.ComputeShaderDeformer
             }
 
             _vertexData = _request.GetData<VertexData>();
-            _mesh.MarkDynamic();
-            _mesh.SetVertexBufferData(_vertexData, 0, 0, _vertexData.Length);
-            _mesh.RecalculateNormals();
+            Mesh.MarkDynamic();
+            Mesh.SetVertexBufferData(_vertexData, 0, 0, _vertexData.Length);
+            Mesh.RecalculateNormals();
         }
 
         private void OnDestroy()

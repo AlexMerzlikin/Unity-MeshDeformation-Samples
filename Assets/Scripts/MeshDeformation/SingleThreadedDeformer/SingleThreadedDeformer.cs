@@ -6,9 +6,9 @@ namespace MeshDeformation.SingleThreadedDeformer
     {
         private Vector3[] _vertices;
 
-        private void Awake()
+        protected override void Awake()
         {
-            Mesh = GetComponent<MeshFilter>().mesh;
+            base.Awake();
             _vertices = Mesh.vertices;
         }
 

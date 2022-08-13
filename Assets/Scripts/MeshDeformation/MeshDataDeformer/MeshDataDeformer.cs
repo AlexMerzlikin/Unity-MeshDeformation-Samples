@@ -12,7 +12,6 @@ namespace MeshDeformation.MeshDataDeformer
     {
         [SerializeField] private int _innerloopBatchCount = 64;
 
-        private Mesh _mesh;
         private NativeArray<VertexData> _vertexData;
         private Vector3 _positionToDeform;
         private Mesh.MeshDataArray _meshDataArray;
@@ -25,16 +24,16 @@ namespace MeshDeformation.MeshDataDeformer
         private NativeArray<ushort> _sourceIndexData;
         private NativeArray<ushort> _outputIndexData;
 
-        private void Awake()
+        protected override void Awake()
         {
-            _mesh = GetComponent<MeshFilter>().mesh;
+            base.Awake();
             CreateVertexDataArray();
             CreateMeshData();
         }
 
         private void CreateMeshData()
         {
-            _meshDataArray = Mesh.AcquireReadOnlyMeshData(_mesh);
+            _meshDataArray = Mesh.AcquireReadOnlyMeshData(Mesh);
             _layout = new[]
             {
                 new VertexAttributeDescriptor(VertexAttribute.Position,
@@ -54,14 +53,14 @@ namespace MeshDeformation.MeshDataDeformer
 
         private void CreateVertexDataArray()
         {
-            _vertexData = new NativeArray<VertexData>(_mesh.vertexCount, Allocator.Persistent);
-            for (var i = 0; i < _mesh.vertexCount; ++i)
+            _vertexData = new NativeArray<VertexData>(Mesh.vertexCount, Allocator.Persistent);
+            for (var i = 0; i < Mesh.vertexCount; ++i)
             {
                 var v = new VertexData
                 {
-                    Position = _mesh.vertices[i],
-                    Normal = _mesh.normals[i],
-                    Uv = _mesh.uv[i]
+                    Position = Mesh.vertices[i],
+                    Normal = Mesh.normals[i],
+                    Uv = Mesh.uv[i]
                 };
                 _vertexData[i] = v;
             }
@@ -122,12 +121,12 @@ namespace MeshDeformation.MeshDataDeformer
                 _subMeshDescriptor,
                 MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontValidateIndices |
                 MeshUpdateFlags.DontNotifyMeshUsers);
-            _mesh.MarkDynamic();
+            Mesh.MarkDynamic();
             Mesh.ApplyAndDisposeWritableMeshData(
                 _meshDataArrayOutput,
-                _mesh,
+                Mesh,
                 MeshUpdateFlags.DontRecalculateBounds | MeshUpdateFlags.DontValidateIndices);
-            _mesh.RecalculateNormals();
+            Mesh.RecalculateNormals();
         }
 
         private void OnDestroy()
