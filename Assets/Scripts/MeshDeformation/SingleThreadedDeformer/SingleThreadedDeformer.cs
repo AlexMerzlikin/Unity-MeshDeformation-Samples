@@ -22,8 +22,8 @@ namespace MeshDeformation.SingleThreadedDeformer
             for (var i = 0; i < _vertices.Length; i++)
             {
                 var position = _vertices[i];
-                var distance = Vector3.Distance(position, Vector3.zero);
-                position.y = Mathf.Sin(Time.time * _speed + distance) * _amplitude;
+                var distance = DeformerUtilities.CalculateDistance(position);
+                position.y = DeformerUtilities.CalculateDisplacement(distance, Time.time, _speed, _amplitude);
                 _vertices[i] = position;
             }
 

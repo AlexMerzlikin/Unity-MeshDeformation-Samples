@@ -24,8 +24,8 @@ namespace MeshDeformation.JobSystemDeformer
         public void Execute(int index)
         {
             var position = _vertices[index];
-            var distance = Vector3.Distance(position, Vector3.zero);
-            position.y = Mathf.Sin(_time * _speed + distance) * _amplitude;
+            var distance = DeformerUtilities.CalculateDistance(position);
+            position.y = DeformerUtilities.CalculateDisplacement(distance, _time, _speed, _amplitude);
             _vertices[index] = position;
         }
     }
