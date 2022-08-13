@@ -9,9 +9,33 @@ namespace PerformanceTests
     public class MeshDeformationTests
     {
         [UnityTest, Performance]
-        public IEnumerator DeformableMeshPlane_MeshData_PerformanceTest()
+        public IEnumerator SingleThreaded()
         {
-            yield return StartTest("Sample");
+            yield return StartTest("SingleThreaded");
+        }
+
+        [UnityTest, Performance]
+        public IEnumerator JobSystem()
+        {
+            yield return StartTest("JobSystem");
+        }
+
+        [UnityTest, Performance]
+        public IEnumerator MeshData()
+        {
+            yield return StartTest("MeshData");
+        }
+
+        [UnityTest, Performance]
+        public IEnumerator ComputeShader()
+        {
+            yield return StartTest("ComputeShader");
+        }
+
+        [UnityTest, Performance]
+        public IEnumerator VertexShader()
+        {
+            yield return StartTest("VertexShader");
         }
 
         private static IEnumerator StartTest(string sceneName)
