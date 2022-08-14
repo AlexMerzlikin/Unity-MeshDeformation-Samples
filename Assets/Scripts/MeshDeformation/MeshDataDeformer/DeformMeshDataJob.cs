@@ -32,8 +32,7 @@ namespace MeshDeformation.MeshDataDeformer
             var outputVertexData = OutputMesh.GetVertexData<VertexData>();
             var vertexData = _vertexData[index];
             var position = vertexData.Position;
-            var distance = DeformerUtilities.CalculateDistance(position);
-            position.y = DeformerUtilities.CalculateDisplacement(distance, _time, _speed, _amplitude);
+            position.y = DeformerUtilities.CalculateDisplacement(position, _time, _speed, _amplitude);
             outputVertexData[index] = new VertexData
             {
                 Position = position,
