@@ -19,7 +19,7 @@ namespace MeshDeformation.JobSystemDeformer
 
         private void Update()
         {
-            ScheduleJob();
+            TryScheduleJob();
         }
 
         private void LateUpdate()
@@ -32,7 +32,7 @@ namespace MeshDeformation.JobSystemDeformer
             _vertices.Dispose();
         }
 
-        private void ScheduleJob()
+        private void TryScheduleJob()
         {
             if (_scheduled)
             {
@@ -54,6 +54,7 @@ namespace MeshDeformation.JobSystemDeformer
             _handle.Complete();
             Mesh.MarkDynamic();
             Mesh.SetVertices(_vertices);
+            Mesh.RecalculateNormals();
             _scheduled = false;
         }
     }
