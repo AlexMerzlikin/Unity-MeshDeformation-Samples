@@ -8,6 +8,7 @@ Shader "Custom/DeformerSurfaceShader"
         _Metallic ("Metallic", Range(0,1)) = 0.0
         [PowerSlider(5.0)] _Speed ("Speed", Range (0.01, 100)) = 2
         [PowerSlider(5.0)] _Amplitude ("Amplitude", Range (0.01, 5)) = 0.25
+        [PowerSlider(5.0)] _TangentMultiplier ("TangentMultiplier", Range (0.001, 2)) = 0.01
     }
     SubShader
     {
@@ -34,26 +35,29 @@ Shader "Custom/DeformerSurfaceShader"
         fixed4 _Color;
         float _Speed;
         float _Amplitude;
-        
+        float _TangentMultiplier;
+
+        float getOffset( float3 position)
+        {
+            const float distance = 6.0 - length(position - float4(0, 0, 0, 0));
+            return sin(_Time * _Speed + distance) * _Amplitude;
+        }
+
         void vert(inout appdata_full data)
         {
-            float4 position = data.vertex;
-            const float distance = 6.0 - length(data.vertex - float4(0, 0, 0, 0));
-            position.y += sin(_Time * _Speed + distance) * _Amplitude;
-
-            float3 posPlusTangent = data.vertex + data.tangent * 0.01;
-            posPlusTangent.y += sin(_Time * _Speed + distance) * _Amplitude;
-
-            const float3 bitangent = cross(data.normal, data.tangent);
-            float3 posPlusBitangent = data.vertex + bitangent * 0.01;
-            posPlusBitangent.y += sin(_Time * _Speed + distance) * _Amplitude;
-
-            const float3 modifiedTangent = posPlusTangent - position;
-            const float3 modifiedBitangent = posPlusBitangent - position;
-
-            const float3 modifiedNormal = cross(modifiedTangent, modifiedBitangent);
+            data.vertex.y = getOffset(data.vertex);
+        
+            float3 posPlusTangent = data.vertex + data.tangent * _TangentMultiplier;
+            posPlusTangent.y = getOffset(posPlusTangent);
+            float3 bitangent = cross(data.normal, data.tangent);
+        
+            float3 posPlusBitangent = data.vertex + bitangent * _TangentMultiplier;
+            posPlusTangent.y = getOffset(posPlusBitangent);
+        
+            float3 modifiedTangent = posPlusTangent - data.vertex;
+            float3 modifiedBitangent = posPlusBitangent - data.vertex;
+            float3 modifiedNormal = cross(modifiedTangent, modifiedBitangent);
             data.normal = normalize(modifiedNormal);
-            data.vertex = position;
         }
 
         void surf(Input IN, inout SurfaceOutputStandard o)
