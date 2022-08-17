@@ -9,12 +9,13 @@ namespace MeshDeformation.MeshDataDeformer
     public struct DeformMeshDataJob : IJobParallelFor
     {
         public Mesh.MeshData OutputMesh;
-        private NativeArray<VertexData> _vertexData;
+        [ReadOnly] private NativeArray<VertexData> _vertexData;
         [ReadOnly] private readonly float _speed;
         [ReadOnly] private readonly float _amplitude;
         [ReadOnly] private readonly float _time;
 
-        public DeformMeshDataJob(NativeArray<VertexData> vertexData,
+        public DeformMeshDataJob(
+            NativeArray<VertexData> vertexData,
             Mesh.MeshData outputMesh,
             float speed,
             float amplitude,
@@ -39,8 +40,6 @@ namespace MeshDeformation.MeshDataDeformer
                 Normal = vertexData.Normal,
                 Uv = vertexData.Uv
             };
-
-            _vertexData[index] = outputVertexData[index];
         }
     }
 }

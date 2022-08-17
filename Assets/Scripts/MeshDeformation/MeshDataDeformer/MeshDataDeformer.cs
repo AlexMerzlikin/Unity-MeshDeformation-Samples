@@ -25,7 +25,6 @@ namespace MeshDeformation.MeshDataDeformer
         protected override void Awake()
         {
             base.Awake();
-            CreateVertexDataArray();
             CreateMeshData();
         }
 
@@ -46,25 +45,6 @@ namespace MeshDeformation.MeshDataDeformer
                 {
                     firstVertex = 0, vertexCount = _meshDataArray[0].vertexCount
                 };
-        }
-
-        private void CreateVertexDataArray()
-        {
-            var meshVertexCount = Mesh.vertexCount;
-            _vertexData = new NativeArray<VertexData>(meshVertexCount, Allocator.Persistent);
-            var meshVertices = Mesh.vertices;
-            var meshNormals = Mesh.normals;
-            var meshUV = Mesh.uv;
-            for (var i = 0; i < meshVertexCount; ++i)
-            {
-                var v = new VertexData
-                {
-                    Position = meshVertices[i],
-                    Normal = meshNormals[i],
-                    Uv = meshUV[i]
-                };
-                _vertexData[i] = v;
-            }
         }
 
         private void Update()
@@ -91,6 +71,7 @@ namespace MeshDeformation.MeshDataDeformer
             var meshData = _meshDataArray[0];
             outputMesh.SetIndexBufferParams(meshData.GetSubMesh(0).indexCount, meshData.indexFormat);
             outputMesh.SetVertexBufferParams(meshData.vertexCount, _layout);
+            _vertexData = meshData.GetVertexData<VertexData>();
             _job = new DeformMeshDataJob(
                 _vertexData,
                 outputMesh,
@@ -135,11 +116,6 @@ namespace MeshDeformation.MeshDataDeformer
                 MeshUpdateFlags.DontResetBoneBounds |
                 MeshUpdateFlags.DontNotifyMeshUsers);
             Mesh.RecalculateNormals();
-        }
-
-        private void OnDestroy()
-        {
-            _vertexData.Dispose();
         }
     }
 }
