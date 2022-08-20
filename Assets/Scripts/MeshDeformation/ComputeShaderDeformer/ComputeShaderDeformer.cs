@@ -17,46 +17,22 @@ namespace MeshDeformation.ComputeShaderDeformer
 
         protected override void Awake()
         {
-            base.Awake();
             if (!SystemInfo.supportsAsyncGPUReadback)
             {
                 gameObject.SetActive(false);
                 return;
             }
 
+            base.Awake();
             CreateVertexData();
             SetMeshVertexBufferParams();
             _computeBuffer = CreateComputeBuffer();
             SetComputeShaderValues();
         }
 
-        private void Update()
-        {
-            Request();
-        }
-
-        private void LateUpdate()
-        {
-            TryGetResult();
-        }
-
         private void CreateVertexData()
         {
-            var meshVertexCount = Mesh.vertexCount;
-            _vertexData = new NativeArray<VertexData>(meshVertexCount, Allocator.Temp);
-            var meshVertices = Mesh.vertices;
-            var meshNormals = Mesh.normals;
-            var meshUV = Mesh.uv;
-            for (var i = 0; i < meshVertexCount; ++i)
-            {
-                var v = new VertexData
-                {
-                    Position = meshVertices[i],
-                    Normal = meshNormals[i],
-                    Uv = meshUV[i]
-                };
-                _vertexData[i] = v;
-            }
+            _vertexData = Mesh.AcquireReadOnlyMeshData(Mesh)[0].GetVertexData<VertexData>();
         }
 
         private void SetMeshVertexBufferParams()
@@ -92,6 +68,17 @@ namespace MeshDeformation.ComputeShaderDeformer
             }
 
             return computeBuffer;
+        }
+
+        private void Update()
+        {
+            CreateVertexData();
+            Request();
+        }
+
+        private void LateUpdate()
+        {
+            TryGetResult();
         }
 
         private void Request()
