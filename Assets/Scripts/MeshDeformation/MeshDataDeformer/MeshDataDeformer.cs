@@ -12,7 +12,6 @@ namespace MeshDeformation.MeshDataDeformer
     {
         [SerializeField] private int _innerloopBatchCount = 64;
 
-        private NativeArray<VertexData> _vertexData;
         private Vector3 _positionToDeform;
         private Mesh.MeshDataArray _meshDataArray;
         private Mesh.MeshDataArray _meshDataArrayOutput;
@@ -71,9 +70,8 @@ namespace MeshDeformation.MeshDataDeformer
             var meshData = _meshDataArray[0];
             outputMesh.SetIndexBufferParams(meshData.GetSubMesh(0).indexCount, meshData.indexFormat);
             outputMesh.SetVertexBufferParams(meshData.vertexCount, _layout);
-            _vertexData = meshData.GetVertexData<VertexData>();
             _job = new DeformMeshDataJob(
-                _vertexData,
+                meshData.GetVertexData<VertexData>(),
                 outputMesh,
                 _speed,
                 _amplitude,
