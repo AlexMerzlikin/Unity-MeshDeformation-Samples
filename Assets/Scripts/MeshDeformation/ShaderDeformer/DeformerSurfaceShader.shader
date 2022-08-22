@@ -52,7 +52,7 @@ Shader "Custom/DeformerSurfaceShader"
             float3 bitangent = cross(data.normal, data.tangent);
         
             float3 posPlusBitangent = data.vertex + bitangent * _TangentMultiplier;
-            posPlusTangent.y = getOffset(posPlusBitangent);
+            posPlusBitangent.y = getOffset(posPlusBitangent);
         
             float3 modifiedTangent = posPlusTangent - data.vertex;
             float3 modifiedBitangent = posPlusBitangent - data.vertex;
