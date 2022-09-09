@@ -13,7 +13,10 @@ Configuration:
 Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
 NVIDIA GeForce GTX 1070
 ```
+Unity 2021.3.0f1
+
 Windows standalone build.
+
 The mesh under test has 160801 vertices and 320000 triangles.
 
 |           Method |   Median |      Dev |   StdDev |      Min |      Max |
