@@ -71,7 +71,7 @@ namespace MeshDeformation.MeshDataDeformer
             outputMesh.SetIndexBufferParams(meshData.GetSubMesh(0).indexCount, meshData.indexFormat);
             outputMesh.SetVertexBufferParams(meshData.vertexCount, _layout);
             _job = new DeformMeshDataJob(
-                meshData.GetVertexData<VertexData>(),
+                meshData,
                 outputMesh,
                 _speed,
                 _amplitude,

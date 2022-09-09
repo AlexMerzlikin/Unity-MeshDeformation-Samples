@@ -9,19 +9,19 @@ namespace MeshDeformation.MeshDataDeformer
     public struct DeformMeshDataJob : IJobParallelFor
     {
         public Mesh.MeshData OutputMesh;
-        [ReadOnly] private NativeArray<VertexData> _vertexData;
+        [ReadOnly] private Mesh.MeshData _inputMesh;
         [ReadOnly] private readonly float _speed;
         [ReadOnly] private readonly float _amplitude;
         [ReadOnly] private readonly float _time;
 
         public DeformMeshDataJob(
-            NativeArray<VertexData> vertexData,
+            Mesh.MeshData inputMesh,
             Mesh.MeshData outputMesh,
             float speed,
             float amplitude,
             float time)
         {
-            _vertexData = vertexData;
+            _inputMesh = inputMesh;
             OutputMesh = outputMesh;
             _speed = speed;
             _amplitude = amplitude;
@@ -30,8 +30,9 @@ namespace MeshDeformation.MeshDataDeformer
 
         public void Execute(int index)
         {
+            var inputVertexData = _inputMesh.GetVertexData<VertexData>();
             var outputVertexData = OutputMesh.GetVertexData<VertexData>();
-            var vertexData = _vertexData[index];
+            var vertexData = inputVertexData[index];
             var position = vertexData.Position;
             position.y = DeformerUtilities.CalculateDisplacement(position, _time, _speed, _amplitude);
             outputVertexData[index] = new VertexData
